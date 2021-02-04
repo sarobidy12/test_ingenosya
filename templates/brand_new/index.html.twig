@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs
+{% endblock %}
+
+{% block nav %}
+	<nav class="navbar  navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a href='/' class="navbar-brand">Gestion des utilisateurs</a>
+			<div
+				class="d-flex">
+
+				<!-- Button trigger modal -->
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+					Enregistrer
+				</button>
+
+				<!-- Modal -->
+				<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">Ajouter une nouvelle personne
+								</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<form method="POST" action="/add">
+
+								<div class="modal-body">
+
+									<div class='form-group'>
+										<label>Nom</label>
+										<input type='text' placeholder='nom' name='nom' class='form-control'/>
+									</div>
+
+									<div class='form-group'>
+										<label>Prenom</label>
+										<input type='text' placeholder='Prenom' name='Prenom' class='form-control'/>
+									</div>
+
+									<div class='form-group'>
+										<label>address email</label>
+										<input type='hidden' name='type' value='add'/>
+										<input type='email' placeholder='mail@mail.com' name='email' class='form-control'/>
+									</div>
+
+
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-primary">Save changes</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+{% endblock %}
+
+{% block body %}
+
+	<br/>
+	<div class='row'>
+		<div class='col-md-4'>
+			<form method="POST" action="/find" class="form-inline">
+				<div class='row'>
+					<div class='col-8'>
+						<input class="form-control mr-sm-2" type="search" name='find' {% if find is defined %} value={{find}} {% endif %} placeholder="Nom de l'utilisateur " aria-label="Search">
+					</div>
+					<div class='col-4'>
+						<input type='hidden' name='type' value='find'/>
+						<button class="btn btn-outline-success" type="submit">Search</button>
+					</div>
+				</div>
+
+			</form>
+		</div>
+
+		<div class='col-md-8'>
+
+			{% if utilisateur|length ==  0 %}
+				<h5 class='text-center text-info'>Aucun resulat<br/>
+					<a href='/' class="btn btn-primary">Retour</a>
+				</h5>
+			{% endif %}
+			{% for a in utilisateur %}
+				<div class="card">
+					<h5 class="card-header text-primary">
+						Numero
+						{{a.id}}
+					</h5>
+
+					<div class="card-body">
+						<h5 class="card-title">Nom :
+							{{a.nom}}</h5>
+						<h5 class="card-text">Prenom :
+							{{a.prenom}}</h5>
+						<h5 class="card-text text-info">Date creation :
+							{{a.date_creation | date('d/m/y')}}</h5>
+
+						{% if a.date_modification != null %}
+							<p class="card-text">
+								* Modification le :
+								{{a.date_modification | date('d/m/y')}}</p>
+						{% endif %}
+
+
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{a.id}}">
+							Modification
+						</button>
+
+					</div>
+				</div>
+				<br/>
+
+				<!-- Modal -->
+				<div class="modal fade" id="exampleModal{{a.id}}" tabindex="-1" aria-labelledby="exampleModalLabel{{a.id}}" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabe">Ajouter une nouvelle personne
+								</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+
+							<form method="POST" action="/update">
+
+								<div class="modal-body">
+
+									<div class='form-group'>
+										<label>Nom</label>
+										<input type='text' placeholder='nom' value={{a.nom}} name='nom' class='form-control'/>
+									</div>
+
+									<div class='form-group'>
+										<label>Prenom</label>
+										<input type='text' placeholder='Prenom' value={{a.prenom}} name='Prenom' class='form-control'/>
+									</div>
+
+									<div class='form-group'>
+										<label>address email</label>
+										<input type='email' placeholder='mail@mail.com' value={{a.email}} name='email' class='form-control'/>
+									</div>
+
+
+								</div>
+								<div class="modal-footer">
+									<input type='hidden' name='type' value='update'/>
+									<input type='hidden' name='id' value={{a.id}}/>
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-primary">Modification</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+
+			{% endfor %}
+
+            {% if groupepage is defined %}
+			<nav aria-label="Page navigation example">
+				<ul class="pagination justify-content-end">
+
+					{% for i in 1.. groupepage %}
+						<li class="page-item ">
+                            <li class="page-item {% if page == i %} active {% endif %}">
+                            <a class="page-link" href="/page/{{ i }}">{{ i }}</a></li>
+						</li>
+					{% endfor %}
+
+				</ul>
+			</nav>
+            {% endif %}
+
+		</div>
+
+	</div>
+{% endblock %}
